@@ -1,0 +1,47 @@
+# Langflow Interactive Data Display Component Requirements
+
+# ============================================
+# For Langflow Component Integration
+# ============================================
+# Core dependency - Langflow
+langflow>=1.0.0
+
+# Langflow is built on top of these, but listing them explicitly for clarity:
+# langchain>=0.1.0  # Usually included with langflow
+# pydantic>=2.0.0   # Usually included with langflow
+
+# Note: If you're using this component within an existing Langflow installation,
+# you likely already have all required dependencies installed.
+
+# ============================================
+# For Local Web Server (app.py)
+# ============================================
+# Required for running the local Flask web application
+Flask>=3.0.0
+Werkzeug>=3.0.0
+
+# ============================================
+# Optional Dependencies
+# ============================================
+# For local testing without Langflow (uncomment if needed):
+# pydantic>=2.0.0
+# typing-extensions>=4.0.0
+
+# Development dependencies (optional)
+# pytest>=7.0.0              # For running tests
+# black>=23.0.0              # For code formatting
+# mypy>=1.0.0                # For type checking
+# pylint>=2.15.0             # For linting
+
+# ============================================
+# Installation Instructions
+# ============================================
+#
+# For Langflow integration only:
+#   pip install langflow
+#
+# For local web server only:
+#   pip install Flask
+#
+# For both:
+#   pip install -r requirements.txt

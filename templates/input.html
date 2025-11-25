@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Data Display - Input</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #1f2937;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 40px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #374151;
+            font-size: 0.95rem;
+        }
+
+        .form-group .label-hint {
+            font-weight: 400;
+            color: #6b7280;
+            font-size: 0.85rem;
+            margin-left: 5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #4F46E5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        textarea.form-control {
+            min-height: 300px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .color-input-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        input[type="color"] {
+            width: 60px;
+            height: 42px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-wrapper label {
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .btn {
+            background: #4F46E5;
+            color: white;
+            padding: 14px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-shadow: 0 4px 6px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn:hover {
+            background: #4338ca;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(79, 70, 229, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .examples {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        .examples h3 {
+            color: #374151;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .example-btn {
+            display: inline-block;
+            background: #f3f4f6;
+            color: #374151;
+            padding: 8px 16px;
+            border-radius: 6px;
+            margin: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            border: 2px solid #e5e7eb;
+        }
+
+        .example-btn:hover {
+            background: #e5e7eb;
+            transform: translateY(-2px);
+        }
+
+        .theme-presets {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .theme-preset {
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .theme-preset:hover {
+            transform: scale(1.05);
+            border-color: rgba(255,255,255,0.5);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 25px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .theme-presets {
+                flex-direction: column;
+            }
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            color: #1e40af;
+            font-size: 0.9rem;
+        }
+
+        .info-box strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Interactive Data Display</h1>
+            <p>Paste your data below to create a beautiful display</p>
+            <p style="font-size: 0.9rem;">Supports JSON, plain text, and markdown-style formatting</p>
+        </div>
+
+        <div class="card">
+            <div class="info-box">
+                <strong>💡 Quick Start:</strong>
+                Try one of the example buttons below to see how it works, or paste your own LLM output!
+            </div>
+
+            <form action="/display" method="POST" id="displayForm">
+                <div class="form-group">
+                    <label for="data">
+                        Your Data
+                        <span class="label-hint">(Required - JSON, text, or LLM output)</span>
+                    </label>
+                    <textarea
+                        class="form-control"
+                        id="data"
+                        name="data"
+                        placeholder='Paste your data here... Examples:&#10;&#10;1. JSON format:&#10;{"summary": "Your content", "details": "More info"}&#10;&#10;2. Text with sections (separated by double newlines):&#10;Section 1&#10;Content here...&#10;&#10;Section 2&#10;More content...'
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="title">Page Title</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="title"
+                            name="title"
+                            value="LLM Data Display"
+                            placeholder="Enter a title for your display"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="theme_color">Theme Color</label>
+                        <div class="color-input-wrapper">
+                            <input
+                                type="color"
+                                id="theme_color"
+                                name="theme_color"
+                                value="#4F46E5"
+                            >
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="theme_color_text"
+                                value="#4F46E5"
+                                pattern="^#[0-9A-Fa-f]{6}$"
+                                placeholder="#4F46E5"
+                            >
+                        </div>
+                        <div class="theme-presets">
+                            <span class="theme-preset" style="background: #4F46E5;" data-color="#4F46E5">Indigo</span>
+                            <span class="theme-preset" style="background: #059669;" data-color="#059669">Green</span>
+                            <span class="theme-preset" style="background: #DC2626;" data-color="#DC2626">Red</span>
+                            <span class="theme-preset" style="background: #7C3AED;" data-color="#7C3AED">Purple</span>
+                            <span class="theme-preset" style="background: #2563EB;" data-color="#2563EB">Blue</span>
+                            <span class="theme-preset" style="background: #EA580C;" data-color="#EA580C">Orange</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="collapsed" name="collapsed">
+                        <label for="collapsed">Start with all sections collapsed</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">
+                    ✨ Generate Display
+                </button>
+
+                <div class="examples">
+                    <h3>📝 Quick Examples (Click to load):</h3>
+                    <span class="example-btn" data-example="json">JSON Data</span>
+                    <span class="example-btn" data-example="text">Text Sections</span>
+                    <span class="example-btn" data-example="llm">LLM Response</span>
+                    <span class="example-btn" data-example="report">Business Report</span>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Sync color picker with text input
+        const colorPicker = document.getElementById('theme_color');
+        const colorText = document.getElementById('theme_color_text');
+
+        colorPicker.addEventListener('input', (e) => {
+            colorText.value = e.target.value.toUpperCase();
+        });
+
+        colorText.addEventListener('input', (e) => {
+            const value = e.target.value;
+            if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
+                colorPicker.value = value;
+            }
+        });
+
+        // Theme presets
+        document.querySelectorAll('.theme-preset').forEach(preset => {
+            preset.addEventListener('click', function() {
+                const color = this.getAttribute('data-color');
+                colorPicker.value = color;
+                colorText.value = color;
+            });
+        });
+
+        // Example data
+        const examples = {
+            json: `{
+  "executive_summary": "Q4 2024 showed strong performance with 23% revenue growth",
+  "key_metrics": {
+    "revenue": "$1.2M",
+    "growth": "23%",
+    "users": "15,000",
+    "retention": "89%"
+  },
+  "recommendations": [
+    "Increase marketing spend in high-performing channels",
+    "Focus on user retention programs",
+    "Expand to European markets"
+  ],
+  "next_steps": "Q1 2025 planning meeting scheduled for next week"
+}`,
+            text: `Executive Summary
+This quarter demonstrated exceptional growth across all key metrics with revenue up 23%.
+
+Key Performance Indicators
+- Revenue: $1.2M (+23% YoY)
+- Users: 15,000 (+15%)
+- Retention: 89% (+5%)
+- NPS Score: 72
+
+Strategic Recommendations
+1. Increase marketing investment in high-performing channels
+2. Launch customer retention program
+3. Expand to new geographic markets
+4. Develop partnership strategy
+
+Risk Analysis
+Competition is increasing in the market. Need to maintain innovation leadership and customer satisfaction focus.`,
+            llm: `Based on your question about implementing authentication, here's my comprehensive analysis:
+
+**Architecture Overview**
+I recommend a JWT-based authentication system with refresh tokens. This provides security while maintaining good UX.
+
+**Required Components**
+1. Authentication Service - Handles login/logout/token generation
+2. User Database - Stores credentials with bcrypt hashing
+3. Middleware - Validates tokens on protected routes
+4. Frontend State - Manages auth state and token refresh
+
+**Security Best Practices**
+- Always use HTTPS in production
+- Implement rate limiting on auth endpoints
+- Use secure password hashing (bcrypt with cost factor 12)
+- Set appropriate token expiration (15 min access, 7 day refresh)
+- Implement CSRF protection
+- Consider 2FA for sensitive operations
+
+**Implementation Timeline**
+- Basic auth system: 2-3 days
+- Security hardening: 1-2 days
+- Testing: 1-2 days
+- Total: 4-7 days for production-ready system`,
+            report: `# Quarterly Business Review - Q4 2024
+
+## Executive Summary
+Outstanding quarter with record-breaking performance across all departments. Revenue grew 23% YoY, user base expanded 15%, and customer satisfaction reached all-time high.
+
+## Financial Performance
+Revenue: $1,234,567 (+23% YoY)
+Operating Margin: 34% (+3%)
+Customer Acquisition Cost: $450 (-12%)
+Lifetime Value: $5,400 (+18%)
+Cash Position: $2.3M
+
+## Product Milestones
+✓ Launched mobile app 2.0 with 4.8★ rating
+✓ Released API v3 with GraphQL support
+✓ Implemented SSO for enterprise customers
+✓ Deployed real-time collaboration features
+✓ Achieved 99.9% uptime
+
+## Customer Success
+- Net Promoter Score: 72 (+8 points)
+- Support Response Time: <2 hours
+- Customer Retention: 89% (+5%)
+- Enterprise Customers: 45 (+12)
+
+## Team Growth
+- Engineering: 15 → 20 (+33%)
+- Sales: 8 → 11 (+37%)
+- Customer Success: 5 → 7 (+40%)
+- Total Team: 42 → 53 (+26%)
+
+## Q1 2025 Objectives
+1. Expand to European market
+2. Launch AI-powered analytics
+3. Achieve $1.5M MRR
+4. Hire 10 additional team members
+5. Open London office`
+        };
+
+        // Load examples
+        document.querySelectorAll('.example-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const example = this.getAttribute('data-example');
+                document.getElementById('data').value = examples[example];
+
+                // Scroll to textarea
+                document.getElementById('data').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+            });
+        });
+
+        // Form validation
+        document.getElementById('displayForm').addEventListener('submit', function(e) {
+            const data = document.getElementById('data').value.trim();
+            if (!data) {
+                e.preventDefault();
+                alert('Please enter some data to display!');
+            }
+        });
+    </script>
+</body>
+</html>
