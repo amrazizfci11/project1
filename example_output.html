@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Example Output - LLM Data Display</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #1f2937;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+        }
+
+        .sections-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .section-card:hover {
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+
+        .section-header {
+            background: #4F46E5;
+            color: white;
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+
+        .section-header:hover {
+            background: #4338ca;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .section-title h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .toggle-icon {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+
+        .section-card.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .copy-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+
+        .copy-btn.copied {
+            background: #10b981;
+            border-color: #10b981;
+        }
+
+        .section-content {
+            max-height: 1000px;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+        }
+
+        .section-card.collapsed .section-content {
+            max-height: 0;
+            padding: 0;
+        }
+
+        .content-text {
+            padding: 25px;
+            background: #f9fafb;
+            border-left: 4px solid #4F46E5;
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #374151;
+            overflow-x: auto;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #10b981;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            font-weight: 500;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .section-header {
+                padding: 15px;
+            }
+
+            .section-title h3 {
+                font-size: 1.1rem;
+            }
+
+            .content-text {
+                padding: 15px;
+                font-size: 0.85rem;
+            }
+
+            .copy-btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>LLM Data Display - Example Output</h1>
+            <p>Click on sections to expand/collapse • Click copy to copy text</p>
+        </div>
+
+        <div class="sections-container">
+
+            <div class="section-card ">
+                <div class="section-header" onclick="toggleSection('section-0')">
+                    <div class="section-title">
+                        <span class="toggle-icon">▼</span>
+                        <h3>Executive Summary</h3>
+                    </div>
+                    <button class="copy-btn" onclick="copyText('section-0', event)" title="Copy to clipboard">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        Copy
+                    </button>
+                </div>
+                <div class="section-content" id="section-0">
+                    <pre class="content-text">This quarter demonstrated exceptional growth across all key metrics.
+Revenue increased by 23% year-over-year, driven primarily by new customer acquisitions
+and expansion of existing accounts. User engagement reached all-time highs with a
+15% increase in active users.</pre>
+                </div>
+            </div>
+
+            <div class="section-card ">
+                <div class="section-header" onclick="toggleSection('section-1')">
+                    <div class="section-title">
+                        <span class="toggle-icon">▼</span>
+                        <h3>Key Performance Indicators</h3>
+                    </div>
+                    <button class="copy-btn" onclick="copyText('section-1', event)" title="Copy to clipboard">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        Copy
+                    </button>
+                </div>
+                <div class="section-content" id="section-1">
+                    <pre class="content-text">Financial Metrics:
+- Monthly Recurring Revenue (MRR): $1,234,567 (+23% YoY)
+- Annual Run Rate (ARR): $14.8M (+28% YoY)
+- Customer Acquisition Cost (CAC): $450 (-12% improvement)
+- Lifetime Value (LTV): $5,400 (+18%)
+
+User Metrics:
+- Total Active Users: 15,234 (+15%)
+- Daily Active Users (DAU): 8,456 (+22%)
+- User Retention Rate: 89% (+5%)
+- Net Promoter Score (NPS): 72 (+8 points)</pre>
+                </div>
+            </div>
+
+            <div class="section-card ">
+                <div class="section-header" onclick="toggleSection('section-2')">
+                    <div class="section-title">
+                        <span class="toggle-icon">▼</span>
+                        <h3>Strategic Recommendations</h3>
+                    </div>
+                    <button class="copy-btn" onclick="copyText('section-2', event)" title="Copy to clipboard">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        Copy
+                    </button>
+                </div>
+                <div class="section-content" id="section-2">
+                    <pre class="content-text">1. Accelerate Marketing Investment
+   - Increase digital ad spend by 30%
+   - Focus on high-converting channels (LinkedIn, Google Ads)
+   - Launch referral program to leverage existing user base
+
+2. Enhance Product Features
+   - Prioritize top 3 feature requests from enterprise customers
+   - Improve mobile app experience (currently 3.8/5 rating)
+   - Implement AI-powered recommendations
+
+3. Expand Market Reach
+   - Enter European market Q2 2025
+   - Develop partnerships with complementary SaaS providers
+   - Launch industry-specific solutions for healthcare and finance
+
+4. Optimize Operations
+   - Streamline onboarding process (reduce time by 40%)
+   - Implement automated customer success playbooks
+   - Scale support team to maintain &lt;2hr response time</pre>
+                </div>
+            </div>
+
+            <div class="section-card ">
+                <div class="section-header" onclick="toggleSection('section-3')">
+                    <div class="section-title">
+                        <span class="toggle-icon">▼</span>
+                        <h3>Risk Analysis</h3>
+                    </div>
+                    <button class="copy-btn" onclick="copyText('section-3', event)" title="Copy to clipboard">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        Copy
+                    </button>
+                </div>
+                <div class="section-content" id="section-3">
+                    <pre class="content-text">Competitive Landscape (High Risk):
+Major competitor launched similar features at 20% lower price point.
+Mitigation: Emphasize superior customer support and integration ecosystem.
+
+Technical Debt (Medium Risk):
+Legacy codebase requires refactoring to support new features.
+Mitigation: Allocate 20% of engineering time to technical debt reduction.
+
+Regulatory Compliance (Medium Risk):
+GDPR and data privacy regulations evolving rapidly.
+Mitigation: Hire compliance officer, conduct quarterly audits.
+
+Churn Risk (Low Risk):
+3 enterprise customers up for renewal Q1 2025.
+Mitigation: Assign dedicated success managers, offer early renewal incentives.</pre>
+                </div>
+            </div>
+
+            <div class="section-card ">
+                <div class="section-header" onclick="toggleSection('section-4')">
+                    <div class="section-title">
+                        <span class="toggle-icon">▼</span>
+                        <h3>Next Quarter Objectives</h3>
+                    </div>
+                    <button class="copy-btn" onclick="copyText('section-4', event)" title="Copy to clipboard">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        Copy
+                    </button>
+                </div>
+                <div class="section-content" id="section-4">
+                    <pre class="content-text">Q1 2025 Goals:
+
+Revenue Targets:
+✓ Achieve $1.5M MRR (22% growth)
+✓ Close 15 enterprise deals (&gt;$50K ARR each)
+✓ Reduce churn to &lt;3% monthly
+
+Product Milestones:
+✓ Launch mobile app 2.0 with offline mode
+✓ Release API v3 with GraphQL support
+✓ Implement single sign-on (SSO) for enterprise
+
+Team Growth:
+✓ Hire 5 engineers, 3 sales reps, 2 customer success managers
+✓ Launch internal training program
+✓ Establish remote work policies for international hires
+
+Marketing Initiatives:
+✓ Host virtual summit with 1000+ attendees
+✓ Publish 12 case studies
+✓ Achieve 50K social media followers</pre>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="toast" id="toast">Copied to clipboard!</div>
+
+    <script>
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId).closest('.section-card');
+            section.classList.toggle('collapsed');
+        }
+
+        function copyText(sectionId, event) {
+            event.stopPropagation();
+
+            const contentElement = document.getElementById(sectionId).querySelector('.content-text');
+            const text = contentElement.textContent;
+
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Copied to clipboard!');
+
+                const btn = event.currentTarget;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Copied!';
+                btn.classList.add('copied');
+
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+                showToast('Failed to copy!');
+            });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Add staggered animation to sections
+        document.querySelectorAll('.section-card').forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.1}s`;
+        });
+    </script>
+</body>
+</html>
